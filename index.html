@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>社畜</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="theme-color" content="#2a78d6">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="社畜">
+<style>
+  :root {
+    color-scheme: light;
+    --surface-1:      #fcfcfb;
+    --surface-2:      #f3f2ef;
+    --border:         #e3e1da;
+    --text-primary:   #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted:     #86847c;
+    --profit:         #2a78d6;
+    --loss:           #d03b3b;
+    --entry-yellow:   #a37a00;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      color-scheme: dark;
+      --surface-1:      #1a1a19;
+      --surface-2:      #242422;
+      --border:         #3a3937;
+      --text-primary:   #ffffff;
+      --text-secondary: #c3c2b7;
+      --text-muted:     #8a887f;
+      --profit:         #3987e5;
+      --loss:           #e66767;
+      --entry-yellow:   #e0b12c;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--surface-1); color: var(--text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif;
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  .box { width: 100%; max-width: 420px; }
+  .logo-row { text-align: center; margin-bottom: 18px; }
+  .logo-row img { width: 72px; height: 72px; border-radius: 16px; display: block; margin: 0 auto 10px; }
+  .logo-row h1 { font-size: 20px; margin: 0; }
+  .gate-box input {
+    width: 100%; box-sizing: border-box; background: var(--surface-2); color: var(--text-primary);
+    border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; font-size: 15px;
+    margin-bottom: 10px; text-align: center;
+  }
+  .gate-box button {
+    width: 100%; background: var(--profit); color: white; border: none;
+    border-radius: 10px; padding: 12px; font-size: 15px; font-weight: 600;
+  }
+  .gate-error { color: var(--loss); font-size: 12px; margin-top: 8px; min-height: 1.4em; text-align: center; }
+  #mainContent { display: none; }
+  .card {
+    background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px;
+    padding: 16px 18px; margin-bottom: 14px;
+  }
+  .card h2 { font-size: 15px; margin: 0 0 12px; }
+  .howto-step { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; line-height: 1.6; color: var(--text-secondary); margin-bottom: 10px; }
+  .howto-step:last-child { margin-bottom: 0; }
+  .step-num {
+    flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%; margin-top: 1px;
+    background: var(--profit); color: #fff; font-size: 11px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .strategy-item { background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; margin-bottom: 8px; }
+  .strategy-item:last-child { margin-bottom: 0; }
+  .strategy-item-title { font-weight: 700; font-size: 13px; margin-bottom: 4px; }
+  .strategy-item-desc { color: var(--text-secondary); font-size: 12px; line-height: 1.6; }
+  .note { font-size: 12px; line-height: 1.8; color: var(--text-secondary); }
+  .warn { color: var(--loss); font-weight: 700; text-align: center; font-size: 13px; margin-bottom: 4px; }
+  .ok-btn {
+    display: block; width: 100%; background: var(--profit); color: white; border: none;
+    border-radius: 10px; padding: 13px; font-size: 15px; font-weight: 700; margin-top: 4px;
+  }
+  .picker { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .picker a {
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+    background: var(--surface-2); border: 1px solid var(--border); border-radius: 14px;
+    padding: 22px 10px; text-decoration: none; color: var(--text-primary);
+  }
+  .picker img { width: 56px; height: 56px; border-radius: 14px; }
+  .picker span { font-size: 15px; font-weight: 700; }
+</style>
+</head>
+<body>
+
+  <div class="box" id="gateBox">
+    <div class="logo-row">
+      <img src="icon-192.png" alt="">
+      <h1>社畜</h1>
+    </div>
+    <div class="gate-box">
+      <input type="password" id="gatePassword" placeholder="パスワード" autocomplete="off">
+      <button onclick="checkGatePassword()">開く</button>
+      <div class="gate-error" id="gateError"></div>
+    </div>
+  </div>
+
+  <div class="box" id="mainContent">
+    <div class="logo-row">
+      <img src="icon-192.png" alt="">
+      <h1>社畜</h1>
+    </div>
+
+    <div class="card">
+      <p class="warn">※ 複製・配布・譲渡禁止！</p>
+    </div>
+
+    <div class="card">
+      <h2>ご利用にあたって</h2>
+      <div class="howto-step"><span class="step-num">1</span><span>独自のロジックが平日の大引け後に自動で銘柄を抽出。各アプリの🆕新着ボードをチェック。</span></div>
+      <div class="howto-step"><span class="step-num">2</span><span>出てきた銘柄を、株数ではなく金額ベースで指値注文するだけ。</span></div>
+      <div class="howto-step"><span class="step-num">3</span><span>あとは3タイプごとのルールに沿って待つだけ。</span></div>
+    </div>
+
+    <div class="card">
+      <div class="strategy-item">
+        <div class="strategy-item-title">🔴 暴落型</div>
+        <div class="strategy-item-desc">利確・損切りとも固定。注文したらあとは寝てるだけ。</div>
+      </div>
+      <div class="strategy-item">
+        <div class="strategy-item-title">🔵 上昇型 ・ 🟢 相対強さ型</div>
+        <div class="strategy-item-desc">固定の利確ラインはなし。損切りだけ置いて、あとは「📐指値変更」通知の通りに損切りラインを引き上げる。</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <p class="note">1銘柄あたり日本株は10万円分、米国株は1,000ドル分を購入したと仮定した場合の、過去10年間の純利益を各ページの最下部に掲載しています。実際の株価データを使って検証済みの数値です。</p>
+    </div>
+
+    <button class="ok-btn" id="okBtn" onclick="showPicker()">OK</button>
+
+    <div class="picker" id="picker" style="display:none;">
+      <a href="https://mohimohi111.github.io/stock-signal-dashboard/v3/">
+        <img src="https://mohimohi111.github.io/stock-signal-dashboard/v3/icon-192.png" alt="">
+        <span>日本株</span>
+      </a>
+      <a href="https://mohimohi111.github.io/stock-signal-dashboard-us/v3/">
+        <img src="https://mohimohi111.github.io/stock-signal-dashboard-us/v3/icon-192.png" alt="">
+        <span>米株</span>
+      </a>
+    </div>
+  </div>
+
+<script>
+const GATE_STORAGE_KEY = 'gateOk_v1';
+const GATE_PASSWORD_HASH = '7839d9c722cad8b218b270e6ea309726d8bbc39970f4e9f1307ae391575a3e68';
+
+async function sha256Hex(text) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function checkGatePassword() {
+  const input = document.getElementById('gatePassword');
+  const hash = await sha256Hex(input.value);
+  if (hash === GATE_PASSWORD_HASH) {
+    localStorage.setItem(GATE_STORAGE_KEY, '1');
+    openMain();
+  } else {
+    document.getElementById('gateError').textContent = 'パスワードが違います';
+  }
+}
+
+document.getElementById('gatePassword').addEventListener('keydown', e => {
+  if (e.key === 'Enter') checkGatePassword();
+});
+
+function openMain() {
+  document.getElementById('gateBox').style.display = 'none';
+  document.getElementById('mainContent').style.display = 'block';
+}
+
+function showPicker() {
+  document.getElementById('okBtn').style.display = 'none';
+  document.getElementById('picker').style.display = 'grid';
+}
+
+if (localStorage.getItem(GATE_STORAGE_KEY) === '1') {
+  openMain();
+}
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js'));
+}
+</script>
+</body>
+</html>
