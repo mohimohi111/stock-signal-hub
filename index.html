@@ -49,7 +49,17 @@
   .box { width: 100%; max-width: 420px; }
   .logo-row { text-align: center; margin-bottom: 18px; }
   .logo-row img { width: 72px; height: 72px; border-radius: 50%; display: block; margin: 0 auto 10px; }
-  .logo-row h1 { font-size: 20px; margin: 0; }
+  .logo-row h1 { font-size: 20px; margin: 0 0 10px; }
+  .install-btn {
+    background: var(--surface-2); border: 1px solid var(--border); color: var(--text-primary);
+    border-radius: 8px; padding: 8px 16px; font-size: 13px; font-weight: 600; font-family: inherit;
+  }
+  .push-box {
+    background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px 16px; margin-bottom: 14px; font-size: 13px; line-height: 1.7; color: var(--text-secondary);
+  }
+  .push-box p { margin: 0 0 10px; }
+  .push-box button { margin-top: 4px; }
   .gate-box input {
     width: 100%; box-sizing: border-box; background: var(--surface-2); color: var(--text-primary);
     border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; font-size: 15px;
@@ -125,7 +135,9 @@
     <div class="logo-row">
       <img src="icon-192.png" alt="">
       <h1>社畜</h1>
+      <button type="button" class="install-btn" id="installBtn" onclick="installApp()" style="display:none;">📲 インストール</button>
     </div>
+    <div id="installHintBox" style="display:none;"></div>
 
     <div class="card">
       <p class="warn">※ 複製・配布・譲渡禁止！</p>
@@ -224,6 +236,44 @@ if (localStorage.getItem(GATE_STORAGE_KEY) === '1') {
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => navigator.serviceWorker.register('sw.js'));
+}
+
+// --- インストール(PWA)関連 ---
+const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+let deferredInstallPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+});
+if (!isStandalone) {
+  document.getElementById('installBtn').style.display = '';
+}
+async function installApp() {
+  if (deferredInstallPrompt) {
+    deferredInstallPrompt.prompt();
+    await deferredInstallPrompt.userChoice;
+    deferredInstallPrompt = null;
+    document.getElementById('installBtn').style.display = 'none';
+    return;
+  }
+  const box = document.getElementById('installHintBox');
+  const ua = navigator.userAgent;
+  const isIOS = /iP(hone|ad|od)/.test(ua);
+  const isMac = /Macintosh/.test(ua) && !isIOS;
+  const isAndroid = /Android/.test(ua);
+  const isSafari = /Safari/.test(ua) && !/Chrome|CriOS|Chromium|Edg/.test(ua);
+  let msg;
+  if (isIOS || (isMac && isSafari)) {
+    msg = `<p><strong>Safari</strong>: 共有アイコン(□に↑)をタップ → 「ホーム画面に追加」(iPhone/iPad)または「Dockに追加」(Mac)を選択</p>`;
+  } else if (isAndroid) {
+    msg = `<p><strong>Android Chrome</strong>: 右上の⋮メニュー → 「アプリをインストール」または「ホーム画面に追加」を選択</p>`;
+  } else {
+    msg = `<p><strong>PC(Chrome/Edge)</strong>: アドレスバー右端のインストールアイコン、または右上の⋮メニュー → 「アプリをインストール」を選択</p>
+           <p>それ以外のブラウザ(Firefoxなど)では、この方法でのインストールに対応していません。</p>`;
+  }
+  box.style.display = '';
+  box.innerHTML = `<div class="push-box">${msg}
+    <button class="install-btn" onclick="document.getElementById('installHintBox').style.display='none';">閉じる</button></div>`;
 }
 </script>
 </body>
