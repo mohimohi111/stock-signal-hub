@@ -78,19 +78,33 @@
   .strategy-item-title { font-weight: 700; font-size: 13px; margin-bottom: 4px; }
   .strategy-item-desc { color: var(--text-secondary); font-size: 12px; line-height: 1.6; }
   .note { font-size: 12px; line-height: 1.8; color: var(--text-secondary); }
-  .warn { color: var(--loss); font-weight: 700; text-align: center; font-size: 13px; margin-bottom: 4px; }
+  .warn { color: var(--loss); font-weight: 700; text-align: center; font-size: 16px; margin-bottom: 4px; }
   .ok-btn {
     display: block; width: 100%; background: var(--profit); color: white; border: none;
     border-radius: 10px; padding: 13px; font-size: 15px; font-weight: 700; margin-top: 4px;
   }
   .picker { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-  .picker a {
+  .picker button {
     display: flex; flex-direction: column; align-items: center; gap: 10px;
     background: var(--surface-2); border: 1px solid var(--border); border-radius: 14px;
-    padding: 22px 10px; text-decoration: none; color: var(--text-primary);
+    padding: 22px 10px; color: var(--text-primary); font-family: inherit; cursor: pointer;
   }
   .picker img { width: 56px; height: 56px; border-radius: 50%; }
   .picker span { font-size: 15px; font-weight: 700; }
+  .frame-overlay {
+    position: fixed; inset: 0; background: var(--surface-1); z-index: 300;
+    display: none; flex-direction: column;
+  }
+  .frame-overlay.active { display: flex; }
+  .frame-bar {
+    display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+    border-bottom: 1px solid var(--border); flex-shrink: 0;
+  }
+  .frame-bar button {
+    background: var(--surface-2); border: 1px solid var(--border); color: var(--text-primary);
+    border-radius: 8px; padding: 7px 14px; font-size: 13px; font-weight: 600; font-family: inherit;
+  }
+  .frame-overlay iframe { flex: 1; width: 100%; border: none; }
 </style>
 </head>
 <body>
@@ -142,15 +156,22 @@
     <button class="ok-btn" id="okBtn" onclick="showPicker()">OK</button>
 
     <div class="picker" id="picker" style="display:none;">
-      <a href="https://mohimohi111.github.io/stock-signal-dashboard/v3/">
+      <button type="button" onclick="openFrame('https://mohimohi111.github.io/stock-signal-dashboard/v3/')">
         <img src="https://mohimohi111.github.io/stock-signal-dashboard/v3/icon-192.png" alt="">
         <span>日本株</span>
-      </a>
-      <a href="https://mohimohi111.github.io/stock-signal-dashboard-us/v3/">
+      </button>
+      <button type="button" onclick="openFrame('https://mohimohi111.github.io/stock-signal-dashboard-us/v3/')">
         <img src="https://mohimohi111.github.io/stock-signal-dashboard-us/v3/icon-192.png" alt="">
-        <span>米株</span>
-      </a>
+        <span>米国株</span>
+      </button>
     </div>
+  </div>
+
+  <div class="frame-overlay" id="frameOverlay">
+    <div class="frame-bar">
+      <button type="button" onclick="closeFrame()">← 選択に戻る</button>
+    </div>
+    <iframe id="marketFrame" src="about:blank"></iframe>
   </div>
 
 <script>
@@ -185,6 +206,16 @@ function openMain() {
 function showPicker() {
   document.getElementById('okBtn').style.display = 'none';
   document.getElementById('picker').style.display = 'grid';
+}
+
+function openFrame(url) {
+  document.getElementById('marketFrame').src = url;
+  document.getElementById('frameOverlay').classList.add('active');
+}
+
+function closeFrame() {
+  document.getElementById('frameOverlay').classList.remove('active');
+  document.getElementById('marketFrame').src = 'about:blank';
 }
 
 if (localStorage.getItem(GATE_STORAGE_KEY) === '1') {
