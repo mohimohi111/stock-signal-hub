@@ -45,8 +45,41 @@
     font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif;
     min-height: 100vh; display: flex; align-items: center; justify-content: center;
     padding: 20px;
+    position: relative; overflow-x: hidden;
   }
-  .box { width: 100%; max-width: 420px; }
+  .sky-fx { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+  .sky-fx .glow {
+    position: absolute; width: 140%; height: 140%; left: -20%; top: -20%;
+    background:
+      radial-gradient(circle at 20% 22%, rgba(90,150,255,0.16), transparent 40%),
+      radial-gradient(circle at 80% 72%, rgba(255,255,255,0.10), transparent 45%);
+    filter: blur(10px);
+    animation: driftGlow 22s ease-in-out infinite alternate;
+  }
+  @keyframes driftGlow {
+    0%   { transform: translate(0,0) scale(1); }
+    100% { transform: translate(-4%, 3%) scale(1.06); }
+  }
+  .sky-fx .bolt {
+    position: absolute; inset: 0;
+    background: radial-gradient(circle at 50% 0%, rgba(255,255,255,0.9), rgba(255,255,255,0) 55%);
+    opacity: 0;
+    mix-blend-mode: screen;
+  }
+  .sky-fx.flash .bolt { animation: boltFlash 550ms ease-out; }
+  @keyframes boltFlash {
+    0%   { opacity: 0; }
+    6%   { opacity: 0.9; }
+    12%  { opacity: 0.15; }
+    20%  { opacity: 0.7; }
+    30%  { opacity: 0; }
+    100% { opacity: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sky-fx .glow { animation: none; }
+    .sky-fx .bolt { display: none; }
+  }
+  .box, .frame-overlay { position: relative; z-index: 1; }
   .logo-row { text-align: center; margin-bottom: 18px; }
   .logo-row h1 {
     font-size: 52px; margin: 0 0 10px; font-weight: 800; line-height: 1;
@@ -121,10 +154,9 @@
 </head>
 <body>
 
+  <div class="sky-fx" id="skyFx"><div class="glow"></div><div class="bolt"></div></div>
+
   <div class="box" id="gateBox">
-    <div class="logo-row">
-      <h1>完</h1>
-    </div>
     <div class="gate-box">
       <input type="password" id="gatePassword" placeholder="パスワード" autocomplete="off">
       <button onclick="checkGatePassword()">開く</button>
@@ -134,7 +166,6 @@
 
   <div class="box" id="mainContent">
     <div class="logo-row">
-      <h1>完</h1>
       <button type="button" class="install-btn" id="installBtn" onclick="installApp()" style="display:none;">📲 インストール</button>
     </div>
     <div id="installHintBox" style="display:none;"></div>
@@ -152,12 +183,12 @@
 
     <div class="card">
       <div class="strategy-item">
-        <div class="strategy-item-title">🔴 MODE C</div>
-        <div class="strategy-item-desc">利確・損切りとも固定。注文したらあとは放置でOK。</div>
-      </div>
-      <div class="strategy-item">
         <div class="strategy-item-title">🔵 MODE A ・ 🟡 MODE B</div>
         <div class="strategy-item-desc">固定の利確ラインはなし。損切りだけ置いて、あとは「📐指値変更」通知の通りに損切りラインを引き上げる。</div>
+      </div>
+      <div class="strategy-item">
+        <div class="strategy-item-title">🔴 MODE C</div>
+        <div class="strategy-item-desc">利確・損切りとも固定。注文したらあとは放置でOK。</div>
       </div>
     </div>
 
@@ -247,6 +278,18 @@ if (localStorage.getItem(GATE_STORAGE_KEY) === '1') {
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => navigator.serviceWorker.register('sw.js'));
+}
+
+// --- 背景の稲光演出 ---
+if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  const skyFx = document.getElementById('skyFx');
+  const scheduleFlash = () => {
+    skyFx.classList.remove('flash');
+    void skyFx.offsetWidth;
+    skyFx.classList.add('flash');
+    setTimeout(scheduleFlash, 4000 + Math.random() * 9000);
+  };
+  setTimeout(scheduleFlash, 2000 + Math.random() * 3000);
 }
 
 // --- インストール(PWA)関連 ---
