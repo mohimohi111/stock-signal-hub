@@ -162,7 +162,7 @@
     </div>
 
     <div class="card">
-      <p class="note">1銘柄あたり日本株は10万円分、米国株は1,000ドル分を購入したと仮定した場合の、過去10年間の純利益を各ページの最下部に掲載しています。実際の株価データを使って検証済みの数値です。</p>
+      <p class="note">1銘柄あたり日本株・米国株ともに約10万円分を購入したと仮定した場合の、過去10年間の純利益を各ページの最下部に掲載しています。実際の株価データを使って検証済みの数値です。</p>
     </div>
 
     <button class="ok-btn" id="okBtn" onclick="showPicker()">OK</button>
@@ -228,6 +228,17 @@ function openFrame(url) {
 function closeFrame() {
   document.getElementById('frameOverlay').classList.remove('active');
   document.getElementById('marketFrame').src = 'about:blank';
+}
+
+function logoutHub() {
+  localStorage.removeItem(GATE_STORAGE_KEY);
+  closeFrame();
+  document.getElementById('mainContent').style.display = 'none';
+  document.getElementById('picker').style.display = 'none';
+  document.getElementById('okBtn').style.display = 'block';
+  document.getElementById('gatePassword').value = '';
+  document.getElementById('gateError').textContent = '';
+  document.getElementById('gateBox').style.display = 'block';
 }
 
 if (localStorage.getItem(GATE_STORAGE_KEY) === '1') {
