@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>社畜</title>
+<title>完</title>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -11,7 +11,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="社畜">
+<meta name="apple-mobile-web-app-title" content="完">
 <style>
   :root {
     color-scheme: light;
@@ -48,23 +48,9 @@
   }
   .box { width: 100%; max-width: 420px; }
   .logo-row { text-align: center; margin-bottom: 18px; }
-  .logo-row img { width: 72px; height: 72px; border-radius: 50%; display: block; margin: 0 auto 10px; }
   .logo-row h1 {
-    font-size: 44px; margin: 0 0 10px; letter-spacing: 8px; font-weight: 900;
-    color: #b30000;
-    text-shadow:
-      0 0 8px rgba(179, 0, 0, 0.85),
-      0 3px 0 #6e0000,
-      2px 7px 2px rgba(0, 0, 0, 0.55),
-      -1px 10px 3px rgba(110, 0, 0, 0.5);
-    animation: flicker 4.5s infinite;
-  }
-  @keyframes flicker {
-    0%, 89%, 100% { opacity: 1; }
-    90% { opacity: 0.55; }
-    92% { opacity: 1; }
-    94% { opacity: 0.35; }
-    96% { opacity: 1; }
+    font-size: 52px; margin: 0 0 10px; font-weight: 800; line-height: 1;
+    color: var(--text-primary);
   }
   .install-btn {
     background: var(--surface-2); border: 1px solid var(--border); color: var(--text-primary);
@@ -137,8 +123,7 @@
 
   <div class="box" id="gateBox">
     <div class="logo-row">
-      <img src="icon-192.png" alt="">
-      <h1>社畜</h1>
+      <h1>完</h1>
     </div>
     <div class="gate-box">
       <input type="password" id="gatePassword" placeholder="パスワード" autocomplete="off">
@@ -149,8 +134,7 @@
 
   <div class="box" id="mainContent">
     <div class="logo-row">
-      <img src="icon-192.png" alt="">
-      <h1>社畜</h1>
+      <h1>完</h1>
       <button type="button" class="install-btn" id="installBtn" onclick="installApp()" style="display:none;">📲 インストール</button>
     </div>
     <div id="installHintBox" style="display:none;"></div>
@@ -160,7 +144,7 @@
     </div>
 
     <div class="card">
-      <h2>ご利用にあたって</h2>
+      <h2>ルール</h2>
       <div class="howto-step"><span class="step-num">1</span><span>独自のロジックが平日の大引け後に自動で銘柄を抽出。各アプリの🆕新着ボードをチェック。</span></div>
       <div class="howto-step"><span class="step-num">2</span><span>出てきた銘柄を、株数ではなく金額ベースで指値注文する。</span></div>
       <div class="howto-step"><span class="step-num">3</span><span>あとは3タイプごとのルールに沿って待つ。</span></div>
@@ -168,11 +152,11 @@
 
     <div class="card">
       <div class="strategy-item">
-        <div class="strategy-item-title">🔴 暴落型</div>
+        <div class="strategy-item-title">🔴 MODE C</div>
         <div class="strategy-item-desc">利確・損切りとも固定。注文したらあとは放置でOK。</div>
       </div>
       <div class="strategy-item">
-        <div class="strategy-item-title">🔵 上昇型 ・ 🟢 相対強さ型</div>
+        <div class="strategy-item-title">🔵 MODE A ・ 🟡 MODE B</div>
         <div class="strategy-item-desc">固定の利確ラインはなし。損切りだけ置いて、あとは「📐指値変更」通知の通りに損切りラインを引き上げる。</div>
       </div>
     </div>
@@ -204,7 +188,7 @@
 
 <script>
 const GATE_STORAGE_KEY = 'gateOk_v1';
-const GATE_PASSWORD_HASH = '7839d9c722cad8b218b270e6ea309726d8bbc39970f4e9f1307ae391575a3e68';
+const GATE_PASSWORD_HASH = '5169efc2fba7ff84922cb05c9651d44ac705f2d751a7ee26f2f87ce2a31f0ef8';
 
 async function sha256Hex(text) {
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
