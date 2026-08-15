@@ -62,17 +62,17 @@
   }
   .sky-fx .bolt {
     position: absolute; inset: 0;
-    background: radial-gradient(circle at 50% 0%, rgba(255,255,255,0.9), rgba(255,255,255,0) 55%);
+    background: radial-gradient(circle at var(--bx,50%) var(--by,0%), rgba(255,255,255,var(--bi,0.85)), rgba(255,255,255,0) 55%);
     opacity: 0;
     mix-blend-mode: screen;
   }
-  .sky-fx.flash .bolt { animation: boltFlash 550ms ease-out; }
+  .sky-fx.flash .bolt { animation: boltFlash var(--bdur, 500ms) ease-out; }
   @keyframes boltFlash {
     0%   { opacity: 0; }
-    6%   { opacity: 0.9; }
-    12%  { opacity: 0.15; }
-    20%  { opacity: 0.7; }
-    30%  { opacity: 0; }
+    8%   { opacity: 1; }
+    16%  { opacity: 0.1; }
+    26%  { opacity: 0.8; }
+    40%  { opacity: 0; }
     100% { opacity: 0; }
   }
   @media (prefers-reduced-motion: reduce) {
@@ -283,13 +283,23 @@ if ('serviceWorker' in navigator) {
 // --- 背景の稲光演出 ---
 if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
   const skyFx = document.getElementById('skyFx');
-  const scheduleFlash = () => {
+  const bolt = skyFx.querySelector('.bolt');
+  const doFlash = () => {
+    bolt.style.setProperty('--bx', (15 + Math.random() * 70).toFixed(0) + '%');
+    bolt.style.setProperty('--by', (Math.random() * 35).toFixed(0) + '%');
+    bolt.style.setProperty('--bi', (0.55 + Math.random() * 0.4).toFixed(2));
+    bolt.style.setProperty('--bdur', (350 + Math.random() * 400).toFixed(0) + 'ms');
     skyFx.classList.remove('flash');
     void skyFx.offsetWidth;
     skyFx.classList.add('flash');
-    setTimeout(scheduleFlash, 4000 + Math.random() * 9000);
   };
-  setTimeout(scheduleFlash, 2000 + Math.random() * 3000);
+  const scheduleFlash = () => {
+    doFlash();
+    if (Math.random() < 0.35) setTimeout(doFlash, 120 + Math.random() * 200);
+    const gap = Math.random() < 0.25 ? 1500 + Math.random() * 2500 : 4000 + Math.random() * 15000;
+    setTimeout(scheduleFlash, gap);
+  };
+  setTimeout(scheduleFlash, 1200 + Math.random() * 3000);
 }
 
 // --- インストール(PWA)関連 ---
