@@ -131,8 +131,23 @@
   .picker { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
   .picker button {
     display: flex; flex-direction: column; align-items: center; gap: 10px;
-    background: var(--surface-2); border: 1px solid var(--border); border-radius: 14px;
+    background: var(--surface-2); border: 1px solid var(--profit); border-radius: 14px;
     padding: 22px 10px; color: var(--text-primary); font-family: inherit; cursor: pointer;
+    box-shadow: 0 0 4px var(--profit), 0 0 12px var(--profit), 0 0 24px color-mix(in srgb, var(--profit) 55%, transparent);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .picker button { animation: neonFlicker 4s infinite; }
+    .picker button:nth-child(2) { animation-delay: 2s; }
+  }
+  @keyframes neonFlicker {
+    0%, 18%, 22%, 25%, 53%, 57%, 100% {
+      border-color: var(--profit);
+      box-shadow: 0 0 4px var(--profit), 0 0 12px var(--profit), 0 0 24px color-mix(in srgb, var(--profit) 55%, transparent);
+    }
+    20%, 24%, 55% {
+      border-color: color-mix(in srgb, var(--profit) 35%, var(--border));
+      box-shadow: 0 0 2px color-mix(in srgb, var(--profit) 40%, transparent);
+    }
   }
   .picker img { width: 56px; height: 56px; border-radius: 50%; }
   .picker span { font-size: 15px; font-weight: 700; }
@@ -183,7 +198,7 @@
 
     <div class="card">
       <div class="strategy-item">
-        <div class="strategy-item-title">🔵 MODE A ・ 🟡 MODE B</div>
+        <div class="strategy-item-title">🟢 MODE A ・ 🟡 MODE B</div>
         <div class="strategy-item-desc">固定の利確ラインはなし。損切りだけ置いて、あとは「📐指値変更」通知の通りに損切りラインを引き上げる。</div>
       </div>
       <div class="strategy-item">
