@@ -1,4 +1,4 @@
-const CACHE_NAME = "kan-hub-v1-2026-08-17";
+const CACHE_NAME = "kan-hub-v2-2026-10-19";
 const APP_SHELL = ["./", "./index.html", "./manifest.json", "./icon-192.png", "./icon-512.png"];
 
 self.addEventListener("install", (event) => {
