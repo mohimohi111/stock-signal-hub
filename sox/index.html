@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SOX</title>
+<meta name="theme-color" content="#2a78d6">
+<style>
+  :root {
+    color-scheme: light;
+    --surface-1:      #fcfcfb;
+    --surface-2:      #f3f2ef;
+    --border:         #e3e1da;
+    --text-primary:   #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted:     #86847c;
+    --profit:         #2a78d6;
+    --loss:           #d03b3b;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      color-scheme: dark;
+      --surface-1:      #1a1a19;
+      --surface-2:      #242422;
+      --border:         #3a3937;
+      --text-primary:   #ffffff;
+      --text-secondary: #c3c2b7;
+      --text-muted:     #8a887f;
+      --profit:         #3987e5;
+      --loss:           #e66767;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--surface-1); color: var(--text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif;
+    padding: 16px; max-width: 640px; margin: 0 auto;
+    font-variant-numeric: tabular-nums;
+  }
+  h1 { font-size: 24px; margin: 4px 0 2px; }
+  .sub { color: var(--text-muted); font-size: 12px; margin-bottom: 14px; }
+  .card {
+    background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px 16px; margin-bottom: 14px;
+  }
+  .card h2 { font-size: 14px; margin: 0 0 10px; color: var(--text-secondary); font-weight: 700; }
+  .big { font-size: 28px; font-weight: 800; line-height: 1.2; }
+  .pos { color: var(--profit); }
+  .neg { color: var(--loss); }
+  .muted { color: var(--text-muted); font-size: 12px; }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
+  .stat { background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px; padding: 8px 10px; }
+  .stat .k { font-size: 11px; color: var(--text-muted); }
+  .stat .v { font-size: 15px; font-weight: 700; margin-top: 2px; }
+  .signal { font-size: 15px; line-height: 1.7; }
+  .signal b { font-size: 18px; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th, td { padding: 6px 4px; text-align: right; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  th { color: var(--text-muted); font-weight: 600; }
+  th:first-child, td:first-child { text-align: left; }
+  .scroll { overflow-x: auto; }
+  .bar-row { display: grid; grid-template-columns: 40px 1fr 64px; align-items: center; gap: 8px; font-size: 12px; margin: 4px 0; }
+  .bar-track { position: relative; height: 14px; }
+  .bar-track::before { content: ""; position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: var(--border); }
+  .bar { position: absolute; top: 2px; height: 10px; border-radius: 2px; }
+  .bar-row .amt { text-align: right; }
+  #gateMsg { display: none; text-align: center; margin-top: 40vh; color: var(--text-secondary); }
+</style>
+</head>
+<body>
+<div id="gateMsg">アプリのトップから開いてください</div>
+<div id="app" style="display:none">
+  <h1>SOX</h1>
+  <div class="sub" id="updated"></div>
+
+  <div class="card">
+    <h2>次の取引</h2>
+    <div class="signal" id="signal">読み込み中…</div>
+  </div>
+
+  <div class="card">
+    <h2>実績</h2>
+    <div id="live"></div>
+  </div>
+
+  <div class="card">
+    <h2>過去の検証（年別）</h2>
+    <div id="btSummary"></div>
+    <div id="years" style="margin-top:12px"></div>
+  </div>
+
+  <div class="card">
+    <h2>過去の検証（直近の取引）</h2>
+    <div class="scroll"><table id="recent"></table></div>
+  </div>
+</div>
+<script>
+if (localStorage.getItem('gateOk_v1') !== '1') {
+  document.getElementById('gateMsg').style.display = 'block';
+} else {
+  document.getElementById('app').style.display = 'block';
+  load();
+}
+
+const man = y => ((Math.round(y / 1e3) / 10) || 0).toLocaleString('ja-JP', { maximumFractionDigits: 1 }) + '万円';
+const yen = y => Math.round(y).toLocaleString('ja-JP') + '円';
+const sgn = (v, f) => `<span class="${v >= 0 ? 'pos' : 'neg'}">${v >= 0 ? '+' : ''}${f(v)}</span>`;
+const pct = v => v.toFixed(2) + '%';
+const sideJa = s => s === 'buy' ? '買建' : '売建';
+const md = d => d.slice(5).replace('-', '/');
+
+async function load() {
+  let d;
+  try {
+    d = await (await fetch('data.json', { cache: 'no-store' })).json();
+  } catch (e) {
+    document.getElementById('signal').textContent = 'データを読み込めませんでした';
+    return;
+  }
+  document.getElementById('updated').textContent = `SOX→TSM デイトレ ・ 更新 ${d.updated}`;
+
+  const L = d.latest;
+  document.getElementById('signal').innerHTML = L.action
+    ? `${md(L.date)} SOX ${sgn(L.sox_pct, pct)}<br><b>TSM ${sideJa(L.action)} ${man(L.yen)}分</b><br><span class="muted">次の取引日の寄りで建て、引けの1分前に返済</span>`
+    : `${md(L.date)} SOX ${sgn(L.sox_pct, pct)}<br><b>取引なし</b><br><span class="muted">±${d.rule.thr}%未満</span>`;
+
+  const live = d.live;
+  const lv = document.getElementById('live');
+  if (!live.length) {
+    lv.innerHTML = '<div class="muted">まだ記録がありません</div>';
+  } else {
+    const wins = live.filter(t => t.pnl_jpy > 0).length;
+    lv.innerHTML = `<div class="big">${sgn(d.live_total_jpy, yen)}</div>
+      <div class="stats">
+        <div class="stat"><div class="k">回数</div><div class="v">${live.length}回</div></div>
+        <div class="stat"><div class="k">勝率</div><div class="v">${Math.round(wins / live.length * 100)}%</div></div>
+        <div class="stat"><div class="k">手数料計</div><div class="v">$${live.reduce((a, t) => a + t.fee_usd, 0).toFixed(2)}</div></div>
+      </div>
+      <div class="scroll" style="margin-top:10px"><table>
+        <tr><th>日付</th><th>SOX</th><th>売買</th><th>株数</th><th>建値→返済</th><th>損益</th></tr>
+        ${live.map(t => `<tr><td>${md(t.date)}</td><td>${sgn(t.sox_pct, pct)}</td><td>${sideJa(t.side)}</td><td>${t.qty}</td>
+          <td>${t.entry.toFixed(2)}→${t.exit.toFixed(2)}</td><td>${sgn(t.pnl_jpy, yen)}</td></tr>`).join('')}
+      </table></div>`;
+  }
+
+  const B = d.backtest;
+  document.getElementById('btSummary').innerHTML = `<div class="big">${sgn(B.total, man)}</div>
+    <div class="muted">${B.from.slice(0, 4)}年〜 ・ SOX±${d.rule.thr}%で${man(d.rule.base_jpy)}、動きに比例して最大${man(d.rule.max_jpy)}</div>
+    <div class="stats">
+      <div class="stat"><div class="k">回数</div><div class="v">${B.n}回</div></div>
+      <div class="stat"><div class="k">勝率</div><div class="v">${B.win_rate}%</div></div>
+      <div class="stat"><div class="k">最悪の1回</div><div class="v neg">${man(B.worst)}</div></div>
+    </div>`;
+  const mx = Math.max(...B.years.map(y => Math.abs(y.pnl)));
+  document.getElementById('years').innerHTML = B.years.map(y => {
+    const w = Math.abs(y.pnl) / mx * 50;
+    const pos = y.pnl >= 0;
+    return `<div class="bar-row"><span>${y.year}</span>
+      <div class="bar-track"><div class="bar" style="${pos ? 'left:50%' : `left:${50 - w}%`};width:${w}%;background:var(${pos ? '--profit' : '--loss'})"></div></div>
+      <span class="amt">${sgn(y.pnl, man)}</span></div>`;
+  }).join('');
+
+  document.getElementById('recent').innerHTML = `<tr><th>取引日</th><th>前日SOX</th><th>売買</th><th>金額</th><th>寄→引</th><th>損益</th></tr>` +
+    B.recent.map(t => `<tr><td>${md(t.date)}</td><td>${sgn(t.sox_pct, pct)}</td><td>${sideJa(t.side)}</td>
+      <td>${man(t.yen)}</td><td>${sgn(t.ret_pct, pct)}</td><td>${sgn(t.pnl, yen)}</td></tr>`).join('');
+}
+</script>
+</body>
+</html>
