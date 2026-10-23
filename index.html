@@ -128,7 +128,7 @@
     display: block; width: 100%; background: var(--profit); color: white; border: none;
     border-radius: 10px; padding: 13px; font-size: 15px; font-weight: 700; margin-top: 4px;
   }
-  .picker { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .picker { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: min(92vw, 420px); }
   .picker button {
     display: flex; flex-direction: column; align-items: center; gap: 10px;
     background: var(--surface-2); border: 1px solid var(--profit); border-radius: 14px;
@@ -150,12 +150,8 @@
       box-shadow: 0 0 2px color-mix(in srgb, var(--profit) 40%, transparent);
     }
   }
-  .picker img { width: 56px; height: 56px; border-radius: 50%; }
+  .picker img { width: 84px; height: 84px; border-radius: 50%; }
   .picker span { font-size: 15px; font-weight: 700; }
-  .picker .sox-emblem {
-    width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-    background: var(--profit); color: #fff; font-size: 15px; font-weight: 800; letter-spacing: 0.5px;
-  }
   .frame-overlay {
     position: fixed; inset: 0; background: var(--surface-1); z-index: 300;
     display: none; flex-direction: column;
@@ -190,10 +186,6 @@
     </div>
     <div id="installHintBox" style="display:none;"></div>
 
-    <div class="card">
-      <p class="warn">※ 複製・配布・譲渡禁止！</p>
-    </div>
-
     <div class="picker" id="picker">
       <button type="button" onclick="openFrame('https://mohimohi111.github.io/stock-signal-dashboard/v3/')">
         <img src="https://mohimohi111.github.io/stock-signal-dashboard/v3/icon-192.png" alt="">
@@ -204,7 +196,7 @@
         <span>米国株</span>
       </button>
       <button type="button" onclick="openFrame('sox/')">
-        <span class="sox-emblem">SOX</span>
+        <img src="sox/icon-192.png" alt="">
         <span>SOX</span>
       </button>
     </div>
