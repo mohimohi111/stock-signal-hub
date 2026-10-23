@@ -64,10 +64,44 @@
   .bar-track::before { content: ""; position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: var(--border); }
   .bar { position: absolute; top: 2px; height: 10px; border-radius: 2px; }
   .bar-row .amt { text-align: right; }
+  .sky-fx { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+  .sky-fx .glow {
+    position: absolute; width: 140%; height: 140%; left: -20%; top: -20%;
+    background:
+      radial-gradient(circle at 20% 22%, rgba(90,150,255,0.16), transparent 40%),
+      radial-gradient(circle at 80% 72%, rgba(255,255,255,0.10), transparent 45%);
+    filter: blur(10px);
+    animation: driftGlow 22s ease-in-out infinite alternate;
+  }
+  @keyframes driftGlow {
+    0%   { transform: translate(0,0) scale(1); }
+    100% { transform: translate(-4%, 3%) scale(1.06); }
+  }
+  .sky-fx .bolt {
+    position: absolute; inset: 0;
+    background: radial-gradient(circle at var(--bx,50%) var(--by,0%), rgba(255,255,255,var(--bi,0.85)), rgba(255,255,255,0) 55%);
+    opacity: 0;
+    mix-blend-mode: screen;
+  }
+  .sky-fx.flash .bolt { animation: boltFlash var(--bdur, 500ms) ease-out; }
+  @keyframes boltFlash {
+    0%   { opacity: 0; }
+    8%   { opacity: 1; }
+    16%  { opacity: 0.1; }
+    26%  { opacity: 0.8; }
+    40%  { opacity: 0; }
+    100% { opacity: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sky-fx .glow { animation: none; }
+    .sky-fx .bolt { display: none; }
+  }
+  #app, #gateMsg { position: relative; z-index: 1; }
   #gateMsg { display: none; text-align: center; margin-top: 40vh; color: var(--text-secondary); }
 </style>
 </head>
 <body>
+<div class="sky-fx" id="skyFx"><div class="glow"></div><div class="bolt"></div></div>
 <div id="gateMsg">アプリのトップから開いてください</div>
 <div id="app" style="display:none">
   <h1>SOX</h1>
@@ -163,6 +197,28 @@ async function load() {
   document.getElementById('recent').innerHTML = `<tr><th>取引日</th><th>前日SOX</th><th>売買</th><th>金額</th><th>寄→引</th><th>損益</th></tr>` +
     B.recent.map(t => `<tr><td>${md(t.date)}</td><td>${sgn(t.sox_pct, pct)}</td><td>${sideJa(t.side)}</td>
       <td>${man(t.yen)}</td><td>${sgn(t.ret_pct, pct)}</td><td>${sgn(t.pnl, yen)}</td></tr>`).join('');
+}
+
+// --- 背景の稲光演出(米国株・日本株と同じ) ---
+if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  const skyFx = document.getElementById('skyFx');
+  const bolt = skyFx.querySelector('.bolt');
+  const doFlash = () => {
+    bolt.style.setProperty('--bx', (15 + Math.random() * 70).toFixed(0) + '%');
+    bolt.style.setProperty('--by', (Math.random() * 35).toFixed(0) + '%');
+    bolt.style.setProperty('--bi', (0.55 + Math.random() * 0.4).toFixed(2));
+    bolt.style.setProperty('--bdur', (350 + Math.random() * 400).toFixed(0) + 'ms');
+    skyFx.classList.remove('flash');
+    void skyFx.offsetWidth;
+    skyFx.classList.add('flash');
+  };
+  const scheduleFlash = () => {
+    doFlash();
+    if (Math.random() < 0.35) setTimeout(doFlash, 120 + Math.random() * 200);
+    const gap = Math.random() < 0.25 ? 1500 + Math.random() * 2500 : 4000 + Math.random() * 15000;
+    setTimeout(scheduleFlash, gap);
+  };
+  setTimeout(scheduleFlash, 1200 + Math.random() * 3000);
 }
 </script>
 </body>
