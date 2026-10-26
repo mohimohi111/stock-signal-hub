@@ -155,7 +155,7 @@ async function load() {
 
   const L = d.latest;
   document.getElementById('signal').innerHTML = L.action
-    ? `${md(L.date)} SOX ${sgn(L.sox_pct, pct)}<br><b>TSM ${sideJa(L.action)} ${man(L.yen)}分</b><br><span class="muted">次の取引日の寄りで建て、引けの1分前に返済</span>`
+    ? `${md(L.date)} SOX ${sgn(L.sox_pct, pct)}<br><b>TSM ${sideJa(L.action)} ${man(L.yen)}分</b><br><span class="muted">寄り前（21:00、冬時間22:00）に指値で建て、約定しなければ寄りで成行。TSMが寄り前にさらに1%以上逆に動いていれば2倍（上限${man(d.rule.max_jpy)}）。引けの1分前に返済</span>`
     : `${md(L.date)} SOX ${sgn(L.sox_pct, pct)}<br><b>取引なし</b><br><span class="muted">±${d.rule.thr}%未満</span>`;
 
   const live = d.live;
@@ -179,7 +179,7 @@ async function load() {
 
   const B = d.backtest;
   document.getElementById('btSummary').innerHTML = `<div class="big">${sgn(B.total, man)}</div>
-    <div class="muted">${B.from.slice(0, 4)}年〜 ・ SOX±${d.rule.thr}%で${man(d.rule.base_jpy)}、動きに比例して最大${man(d.rule.max_jpy)}</div>
+    <div class="muted">${B.from.slice(0, 4)}年〜 ・ SOX±${d.rule.thr}%で${man(d.rule.base_jpy)}、動きに比例。寄り前にさらに1%以上逆行なら2倍。最大${man(d.rule.max_jpy)}</div>
     <div class="stats">
       <div class="stat"><div class="k">回数</div><div class="v">${B.n}回</div></div>
       <div class="stat"><div class="k">勝率</div><div class="v">${B.win_rate}%</div></div>
@@ -194,9 +194,9 @@ async function load() {
       <span class="amt">${sgn(y.pnl, man)}</span></div>`;
   }).join('');
 
-  document.getElementById('recent').innerHTML = `<tr><th>取引日</th><th>前日SOX</th><th>売買</th><th>金額</th><th>寄→引</th><th>損益</th></tr>` +
+  document.getElementById('recent').innerHTML = `<tr><th>取引日</th><th>前日SOX</th><th>売買</th><th>金額</th><th>建→返済</th><th>損益</th></tr>` +
     B.recent.map(t => `<tr><td>${md(t.date)}</td><td>${sgn(t.sox_pct, pct)}</td><td>${sideJa(t.side)}</td>
-      <td>${man(t.yen)}</td><td>${sgn(t.ret_pct, pct)}</td><td>${sgn(t.pnl, yen)}</td></tr>`).join('');
+      <td>${man(t.yen)}${t.x2 ? ' ×2' : ''}</td><td>${sgn(t.ret_pct, pct)}</td><td>${sgn(t.pnl, yen)}</td></tr>`).join('');
 }
 
 // --- 背景の稲光演出(米国株・日本株と同じ) ---
