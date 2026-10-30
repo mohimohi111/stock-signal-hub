@@ -1,16 +1,16 @@
 {
- "updated": "2026-10-30 06:25",
+ "updated": "2026-10-31 06:25",
  "rule": {
   "thr": 1.6,
   "base_jpy": 1000000,
   "max_jpy": 3000000
  },
  "latest": {
-  "date": "2026-10-29",
-  "sox_pct": -1.42,
-  "sox_close": 11518.2,
-  "action": null,
-  "yen": 0
+  "date": "2026-10-30",
+  "sox_pct": -7.2,
+  "sox_close": 10688.8,
+  "action": "buy",
+  "yen": 3000000
  },
  "live": [
   {
