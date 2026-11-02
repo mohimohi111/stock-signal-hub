@@ -1,16 +1,16 @@
 {
- "updated": "2026-11-03 06:00",
+ "updated": "2026-11-03 06:24",
  "rule": {
   "thr": 1.6,
   "base_jpy": 1000000,
   "max_jpy": 3000000
  },
  "latest": {
-  "date": "2026-10-30",
-  "sox_pct": -7.2,
-  "sox_close": 10688.8,
+  "date": "2026-11-02",
+  "sox_pct": -3.37,
+  "sox_close": 10328.33,
   "action": "buy",
-  "yen": 3000000
+  "yen": 2107759
  },
  "live": [
   {
@@ -23,37 +23,15 @@
    "fee_usd": 0.38,
    "pnl_usd": -650.82,
    "pnl_jpy": -102576
-  },
-  {
-   "date": "2026-10-28",
-   "side": "sell",
-   "sox_pct": 3.6,
-   "qty": 1,
-   "entry": 437.5,
-   "exit": 439.22,
-   "fee_usd": 2.89,
-   "pnl_usd": -4.61,
-   "pnl_jpy": -728
-  },
-  {
-   "date": "2026-10-23",
-   "side": "buy",
-   "sox_pct": -6.72,
-   "qty": 1,
-   "entry": 413.72,
-   "exit": 417.78,
-   "fee_usd": 2.74,
-   "pnl_usd": 1.32,
-   "pnl_jpy": 207
   }
  ],
- "live_total_jpy": -103097,
+ "live_total_jpy": -102576,
  "backtest": {
   "from": "2016-01-07",
-  "to": "2026-10-29",
-  "n": 1013,
-  "total": 6648091,
-  "win_rate": 55.9,
+  "to": "2026-11-02",
+  "n": 1014,
+  "total": 6544666,
+  "win_rate": 55.8,
   "worst": -128652,
   "best": 275742,
   "years": [
@@ -119,12 +97,21 @@
    },
    {
     "year": "2026",
-    "n": 118,
-    "pnl": 613012,
+    "n": 119,
+    "pnl": 509587,
     "win": 65
    }
   ],
   "recent": [
+   {
+    "date": "2026-11-02",
+    "sox_pct": -7.2,
+    "side": "buy",
+    "ret_pct": -3.4,
+    "yen": 3000000,
+    "x2": false,
+    "pnl": -103425
+   },
    {
     "date": "2026-10-29",
     "sox_pct": 1.75,
@@ -250,15 +237,6 @@
     "yen": 2681454,
     "x2": false,
     "pnl": -68712
-   },
-   {
-    "date": "2026-09-21",
-    "sox_pct": 2.78,
-    "side": "sell",
-    "ret_pct": -0.96,
-    "yen": 3000000,
-    "x2": true,
-    "pnl": -30275
    }
   ]
  }
